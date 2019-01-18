@@ -15,6 +15,8 @@ class RegisterForm(forms.Form):
     password1 = forms.CharField(label="密码", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label="确认密码", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(label="邮箱地址", widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    mobile = forms.CharField(label='手机号码', max_length=11, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    realname = forms.CharField(label='真实姓名', max_length=128, widget=forms.TextInput(attrs={'class': 'form-control'}))
     sex = forms.ChoiceField(label='性别', choices=gender)
     # captcha = CaptchaField(label='验证码')
 

@@ -25,13 +25,20 @@ class User(models.Model):
         ('female', '女'),
     )
 
-    usertype = ('user', 'busdriver', 'employee')
+    usertype = (
+        ('user', '用户'),
+        ('busdriver', '大巴司机'),
+        ('employee', '公司员工')
+    )
 
     name = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=256)
     email = models.EmailField(unique=True)
     sex = models.CharField(max_length=32, choices=gender, default='男')
     c_time = models.DateTimeField(auto_now_add=True)
+    identify = models.CharField(max_length=32, choices=usertype, default='用户')
+    mobile = models.CharField(max_length=32, unique=True)
+    realname = models.CharField(max_length=128)
 
     def __str__(self):
         return self.name
@@ -42,13 +49,13 @@ class User(models.Model):
         verbose_name_plural = '用户'
 
 
-class Line(models.Madel):
+class Line(models.Model):
     '''
     线路信息
     '''
 
-    name = models.CharField(max_length=256, unique=True)
-    destination = models.CharField(max_length=256)
+    name = models.CharField(max_length=128, unique=True)
+    destination = models.CharField(max_length=128)
     service_time_start = models.TimeField()
     service_time_end = models.TimeField()
 
@@ -61,8 +68,8 @@ class PriceOfLine(models.Model):
     票价信息
     '''
 
-    line = models.ForeignKey(to='Line', to_field='name')
-    site = models.CharField(max_length=256)
+    line = models.ForeignKey(to='Line', to_field='name', on_delete=models.CASCADE)
+    site = models.CharField(max_length=128)
     price = models.FloatField()
 
 
@@ -71,7 +78,7 @@ class Shuttle(models.Model):
     大巴信息
     '''
 
-    line = models.ForeignKey(to='Line', to_field='name')
+    line = models.ForeignKey(to='Line', to_field='name', on_delete=models.CASCADE)
     plate = models.CharField(max_length=64, unique=True)
 
 
@@ -80,7 +87,7 @@ class Departure(models.Model):
     车的班次信息
     '''
 
-    shuttle_id = models.ForeignKey(to='Shuttle', to_field='id')
+    shuttle_id = models.ForeignKey(to='Shuttle', to_field='id', on_delete=models.CASCADE)
     datetime = models.DateTimeField()
-    busdriver_id = models.ForeignKey(to='User', to_field='id')
+    busdriver_id = models.ForeignKey(to='User', to_field='id', on_delete=models.CASCADE)
 

@@ -69,6 +69,9 @@ def register(request):
             password2 = register_form.cleaned_data['password2']
             email = register_form.cleaned_data['email']
             sex = register_form.cleaned_data['sex']
+            # print(register_form.cleaned_data['mobile'])
+            mobile = register_form.cleaned_data['mobile']
+            realname = register_form.cleaned_data['realname']
             if password1 != password2:  # 判断两次密码是否相同
                 message = "两次输入的密码不同！"
                 return render(request, 'login/register.html', locals())
@@ -77,6 +80,12 @@ def register(request):
                 if same_name_user:  # 用户名唯一
                     message = '用户已经存在，请重新选择用户名！'
                     return render(request, 'login/register.html', locals())
+
+                same_mobile_user = models.User.objects.filter(name=mobile)
+                if same_mobile_user: # 手机号唯一
+                    message = '该手机号已被注册，请登录或者重新输入'
+                    return render(request, 'login/register.html', locals())
+
                 same_email_user = models.User.objects.filter(email=email)
                 if same_email_user:  # 邮箱地址唯一
                     message = '该邮箱地址已被注册，请使用别的邮箱！'
@@ -89,6 +98,9 @@ def register(request):
                 new_user.password = password1
                 new_user.email = email
                 new_user.sex = sex
+                new_user.realname = realname
+                new_user.mobile = mobile
+                # new_user.usertype =
                 new_user.save()
                 return redirect('/login/')  # 自动跳转到登录页面
 
