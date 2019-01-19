@@ -5,13 +5,15 @@ from booking import models
 from django.shortcuts import render, redirect
 from .forms import UserForm, RegisterForm
 import hashlib
+from django.forms.models import model_to_dict
+import datetime
 
 
 def hash_code(s, salt='ojbk'):
     h = hashlib.sha3_256()
     s += salt
     h.update(s.encode())
-    print('h=', h.hexdigest())
+    # print('h=', h.hexdigest())
     return h.hexdigest()
 
 
@@ -82,6 +84,7 @@ def register(request):
             # print(register_form.cleaned_data['mobile'])
             mobile = register_form.cleaned_data['mobile']
             realname = register_form.cleaned_data['realname']
+            identify = register_form.cleaned_data['identify']
             if password1 != password2:  # 判断两次密码是否相同
                 message = "两次输入的密码不同！"
                 return render(request, 'login/register.html', locals())
@@ -101,7 +104,7 @@ def register(request):
                     message = '该邮箱地址已被注册，请使用别的邮箱！'
                     return render(request, 'login/register.html', locals())
 
-                print('完成检验 可以注册')
+                # print('完成检验 可以注册')
                 # 当一切都OK的情况下，创建新用户
 
                 new_user = models.User.objects.create()
@@ -111,7 +114,7 @@ def register(request):
                 new_user.sex = sex
                 new_user.realname = realname
                 new_user.mobile = mobile
-                # new_user.usertype =
+                new_user.identify = identify
                 new_user.save()
                 return redirect('/login/')  # 自动跳转到登录页面
 
@@ -122,3 +125,69 @@ def register(request):
 def base(request):
     pass
     return render(request, 'base.html')
+
+
+def browse(request):
+    '''
+    进入预定页面，返回所有线路的信息
+    :param request:
+    :return:
+    '''
+
+    lines = models.Line.objects.all()
+    # print('lines=', model_to_dict(lines[0]))
+    # print('time', str(model_to_dict(lines[0])['service_time_start']).split()[0])
+    # l1 = models.Line.objects.get(name=lines[0])
+    # print('l1=', l1)
+
+    context = []
+
+    for item in lines:
+        # print(item)
+        item_dict = model_to_dict(item)
+        line_price = models.PriceOfLine.objects.filter(line_id=str(item_dict['id']))
+        # 构建各车站票价列表
+        price = [model_to_dict(x) for x in line_price]
+        item_dict['price'] = price
+        # print(item_dict)
+
+        # 构建发车时间的list
+        timetable = []
+        i = item_dict['service_time_start']
+        interval = item_dict['interval']
+        while (1) :
+            # print(i > item_dict['service_time_end'])
+            # print(i > item_dict['service_time_start'])
+            if (item_dict['service_time_start'] < item_dict['service_time_end']):
+
+                if ((i>item_dict['service_time_end']) and (i>item_dict['service_time_start'])) \
+                        or((i<item_dict['service_time_end']) and (i<item_dict['service_time_start'])):
+                    # print('---------------')
+                    break
+            else:
+                if ((i>item_dict['service_time_end']) and (i<item_dict['service_time_start'])):
+                    # print('---------------')
+                    break
+
+            timetable.append(i)
+            print(i)
+            i = datetime.time((i.hour+interval.hour + (i.minute+interval.minute) // 60) % 24, \
+                              (i.minute+interval.minute) % 60)
+        print(timetable)
+        item_dict['timetable'] = timetable
+        context.append(item_dict)
+
+    return render(request, 'booking/browse.html', {
+        'num': len(context),
+        'context': context
+    })
+
+
+def booking(request):
+    if request == 'GET':
+        return render(request, 'login/index.html')
+    else:
+        terminal = request.POST.get('terminal', None)
+        departuretime = request.POST.get('departuretime', None)
+
+    return render(request, 'booking/booking.html')

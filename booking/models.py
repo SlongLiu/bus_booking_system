@@ -82,13 +82,21 @@ class Line(models.Model):
     线路信息
     '''
 
+    bustype = (
+        ('G', '去机场'),
+        ('C', '去城区'),
+    )
+
     name = models.CharField(max_length=128, unique=True)
-    destination = models.CharField(max_length=128)
+    numname = models.CharField(max_length=64)
+    # destination = models.CharField(max_length=128)
     service_time_start = models.TimeField()
     service_time_end = models.TimeField()
+    type = models.CharField(max_length=8, choices=bustype)
+    interval = models.TimeField()
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 
 class PriceOfLine(models.Model):
@@ -96,7 +104,7 @@ class PriceOfLine(models.Model):
     票价信息
     '''
 
-    line = models.ForeignKey(to='Line', to_field='name', on_delete=models.CASCADE)
+    line = models.ForeignKey(to='Line', to_field='id', on_delete=models.CASCADE)
     site = models.CharField(max_length=128)
     price = models.FloatField()
 
@@ -106,8 +114,9 @@ class Shuttle(models.Model):
     大巴信息
     '''
 
-    line = models.ForeignKey(to='Line', to_field='name', on_delete=models.CASCADE)
+    line = models.ForeignKey(to='Line', to_field='id', on_delete=models.CASCADE)
     plate = models.CharField(max_length=64, unique=True)
+    seat = models.IntegerField(default=40)
 
 
 class Departure(models.Model):
@@ -115,7 +124,16 @@ class Departure(models.Model):
     车的班次信息
     '''
 
-    shuttle_id = models.ForeignKey(to='Shuttle', to_field='id', on_delete=models.CASCADE)
+    shuttle = models.ForeignKey(to='Shuttle', to_field='id', on_delete=models.CASCADE)
     datetime = models.DateTimeField()
-    busdriver_id = models.ForeignKey(to='User', to_field='id', on_delete=models.CASCADE)
+    busdriver = models.ForeignKey(to='User', to_field='id', on_delete=models.CASCADE)
 
+
+class Order(models.Model):
+    '''
+    订单信息
+    '''
+
+    user = models.ForeignKey(to='User', to_field='id', on_delete=models.CASCADE)
+    departure = models.ForeignKey(to='Departure', to_field='id', on_delete=models.CASCADE)
+    seat = models.IntegerField()

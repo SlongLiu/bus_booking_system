@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}查看车票{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/browse.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome-4.7.0/css/font-awesome.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    {% if not request.session.is_login %}
+    <h3>您尚未登陆，请登录后购票</h3>
+    {% else %}
+    <h1>您好,{{ request.session.user_name }}。请选择您需要购买的车票！</h1>
+    {% endif %}
+
+    <br>
+
+        <ul class="nav nav-pills">
+          <li role="presentation" class="active"><a href="#">从机场出发</a></li>
+          <li role="presentation"><a href="#">前往机场</a></li>
+          <li role="presentation"><a href="#">省际巴士</a></li>
+        </ul>
+
+    <br>
+
+	{% for item in context %}
+         <br>
+     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="a{{ item.id }}">
+          <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#c{{ item.id }}" aria-expanded="true" aria-controls="collapseOne">
+              {{ item.numname }} {{ item.name }}
+            </a>
+          </h4>
+        </div>
+
+        <div id="c{{ item.id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="a{{ item.id }}">
+
+          <div class="panel-body">
+            <div>
+                        {% for oneprice in item.price %}
+                  <div >
+                      <strong>{{ oneprice.site }}:</strong> {{ oneprice.price }}元
+                  </div>
+              {% endfor %}
+            <strong>运营时间：</strong>
+            {{ item.service_time_start }}--{{ item.service_time_end }}
+            </div>
+        <br>
+
+         <form class="form" role="form" method="POST" action="{% url 'booking' %}" >
+         {% csrf_token %}
+             <div class="col-lg-3">
+                 <strong>请选择终点站和乘坐时间：</strong>
+             </div>
+              <div class="col-lg-3">
+          <select class="form-control" name="terminal">
+              {% for oneprice in item.price %}
+                  <option>{{ oneprice.site }}</option>
+              {% endfor %}
+            </select>
+                  </div>
+              <div class="col-lg-3" name="departuretime">
+              <select class="form-control">
+              {% for t in item.timetable  %}
+                  <option>{{ t }}</option>
+              {% endfor %}
+            </select>
+                  </div>
+             <div class="col-lg-3">
+              <button type="submit" class="btn btn-primary">预订</button>
+             </div>
+          </form>
+
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+
+    </div>
+
+    </div>
+
+
+{% endblock %}

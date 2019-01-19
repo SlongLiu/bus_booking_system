@@ -28,6 +28,8 @@ urlpatterns = [
     path('logout/', views.logout),
     path('base/', views.base),
     # path('captcha/', include('captcha.urls')),
-    url(r'^captcha', include('captcha.urls'))
+    url(r'^captcha', include('captcha.urls')),
+    path('browse/', views.browse),
+    path('booking/', views.booking, name='booking')
 
 ]
