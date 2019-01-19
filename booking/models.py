@@ -36,7 +36,7 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     sex = models.CharField(max_length=32, choices=gender, default='男')
     c_time = models.DateTimeField(auto_now_add=True)
-    identify = models.CharField(max_length=32, choices=usertype, default='用户')
+    identify = models.CharField(max_length=32, choices=usertype, default='user')
     mobile = models.CharField(max_length=32, unique=True)
     realname = models.CharField(max_length=128)
 
@@ -47,6 +47,34 @@ class User(models.Model):
         ordering = ['c_time']
         verbose_name = '用户'
         verbose_name_plural = '用户'
+
+#
+# class Busdriver:
+#     '''
+#     司机
+#     '''
+#
+#     gender = (
+#         ('male', '男'),
+#         ('female', '女'),
+#     )
+#
+#     name = models.CharField(max_length=128, unique=True)
+#     password = models.CharField(max_length=256)
+#     email = models.EmailField(unique=True)
+#     sex = models.CharField(max_length=32, choices=gender, default='男')
+#     c_time = models.DateTimeField(auto_now_add=True)
+#     # identify = models.CharField(max_length=32, choices=usertype, default='用户')
+#     mobile = models.CharField(max_length=32, unique=True)
+#     realname = models.CharField(max_length=128)
+#
+#     def __str__(self):
+#         return self.name
+#
+#     class Meta:
+#         ordering = ['c_time']
+#         verbose_name = '用户'
+#         verbose_name_plural = '用户'
 
 
 class Line(models.Model):

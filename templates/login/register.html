@@ -42,10 +42,16 @@
                   {{ register_form.sex.label_tag }}
                   {{ register_form.sex }}
               </div>
-              <div class="form-group">
+{#              <div class="form-group">#}
+{#                  {{ register_form.captcha.errors }}#}
+{#                  {{ register_form.captcha.label_tag }}#}
+{#                  {{ register_form.captcha }}#}
+{#              </div>#}
+
+            <div class="form-group">
                   {{ register_form.captcha.errors }}
                   {{ register_form.captcha.label_tag }}
-{#                  {{ register_form.captcha }}#}
+                  {{ register_form.captcha }}
               </div>
  
               <button type="reset" class="btn btn-default pull-left">重置</button>

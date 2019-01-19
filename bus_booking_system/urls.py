@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
 from booking import views
+from django.conf.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +26,8 @@ urlpatterns = [
     path('login/', views.login),
     path('register/', views.register),
     path('logout/', views.logout),
-    path('base/', views.base)
+    path('base/', views.base),
+    # path('captcha/', include('captcha.urls')),
+    url(r'^captcha', include('captcha.urls'))
 
 ]

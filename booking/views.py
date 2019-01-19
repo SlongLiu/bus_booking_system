@@ -1,10 +1,18 @@
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
 # Create your views here.
 from django.http import HttpResponse
 from booking import models
 from django.shortcuts import render, redirect
 from .forms import UserForm, RegisterForm
+import hashlib
+
+
+def hash_code(s, salt='ojbk'):
+    h = hashlib.sha3_256()
+    s += salt
+    h.update(s.encode())
+    print('h=', h.hexdigest())
+    return h.hexdigest()
 
 
 def first_request(request):
@@ -28,10 +36,12 @@ def login(request):
             password = request.POST.get('password', None)
             try:
                 user = models.User.objects.get(name=username)
-                if user.password == password:
+                if user.password == hash_code(password):
                     request.session['is_login'] = True
                     request.session['user_id'] = user.id
                     request.session['user_name'] = user.name
+                    request.session['identify'] = user.identify
+                    print(user.identify)
                     return redirect('/index/')
                 else:
                     message = "密码不正确！"
@@ -91,11 +101,12 @@ def register(request):
                     message = '该邮箱地址已被注册，请使用别的邮箱！'
                     return render(request, 'login/register.html', locals())
 
+                print('完成检验 可以注册')
                 # 当一切都OK的情况下，创建新用户
 
                 new_user = models.User.objects.create()
                 new_user.name = username
-                new_user.password = password1
+                new_user.password = hash_code(password1)
                 new_user.email = email
                 new_user.sex = sex
                 new_user.realname = realname
