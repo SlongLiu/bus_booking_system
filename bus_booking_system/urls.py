@@ -22,7 +22,7 @@ from django.conf.urls import include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('firstpage/', views.first_request),
-    path('index/', views.index),
+    path('index/', views.index, name='index'),
     path('login/', views.login),
     path('register/', views.register),
     path('logout/', views.logout),
@@ -30,6 +30,8 @@ urlpatterns = [
     # path('captcha/', include('captcha.urls')),
     url(r'^captcha', include('captcha.urls')),
     path('browse/', views.browse),
-    path('booking/', views.booking, name='booking')
+    path('booking/', views.booking, name='booking'),
+    path('np-result/', views.no_result),
+    path('result/', views.result, name='result')
 
 ]

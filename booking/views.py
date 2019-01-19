@@ -7,6 +7,7 @@ from .forms import UserForm, RegisterForm
 import hashlib
 from django.forms.models import model_to_dict
 import datetime
+import re
 
 
 def hash_code(s, salt='ojbk'):
@@ -170,10 +171,10 @@ def browse(request):
                     break
 
             timetable.append(i)
-            print(i)
+            # print(i)
             i = datetime.time((i.hour+interval.hour + (i.minute+interval.minute) // 60) % 24, \
-                              (i.minute+interval.minute) % 60)
-        print(timetable)
+                              (i.minute+interval.minute) % 60, 0)
+        # print(timetable)
         item_dict['timetable'] = timetable
         context.append(item_dict)
 
@@ -187,7 +188,134 @@ def booking(request):
     if request == 'GET':
         return render(request, 'login/index.html')
     else:
-        terminal = request.POST.get('terminal', None)
+        terminal = request.POST.get('terminal', None).split(':')[0]
+        price = request.POST.get('terminal', None).split(':')[1]
         departuretime = request.POST.get('departuretime', None)
+        departuredate = request.POST.get('departuredate', '2019-02-01')
+        name = request.POST.get('name', None)
 
-    return render(request, 'booking/booking.html')
+        print('name=', name)
+        print('departuredate=', departuredate)
+        print('departuretime=', departuretime)
+        print('terminal=', terminal)
+        print('price=', price)
+
+        # 查询有没有合适的车 departure表里
+        line_id = models.Line.objects.get(name=name).id
+        # print('line_id=', line_id)
+
+        shuttle_id = list(models.Shuttle.objects.filter(line_id=line_id).values('id'))
+        # print('shuttle_id=', shuttle_id)
+
+        departuretime_list = departuretime.split(':')
+        if len(departuretime_list)<3:
+            departuretime_list.append('0')
+        departuredate_list = departuredate.split('-')
+        pretime = datetime.datetime(int(departuredate_list[0]), int(departuredate_list[1]), int(departuredate_list[2]), \
+                  (int(departuretime_list[0])+8+24) % 24, int(departuretime_list[1]), int(departuretime_list[2]))
+        # print('pretime=', pretime)
+        shuttle_id_in_time = models.Departure.objects.filter(datetime=pretime)
+        # print('shuttle_id_in_time=', shuttle_id_in_time)
+
+        # 把合适的车做成一个集合
+        candidate = set()
+        for one in shuttle_id:
+            # print('one[id]=', one['id'])
+            candidate.add(one['id'])
+        # print('candidate=', candidate)
+        # 查看有没有合适的排班
+        avi = -1
+        departure_id = -1
+        for one in shuttle_id_in_time:
+            if one.shuttle_id in candidate:
+                # 查询这个车还有没有座
+                orders = models.Order.objects.filter(departure_id=one.shuttle_id)
+                if len(orders) >= 40:
+                    continue
+                else:
+                    avi = one.shuttle_id
+                    departure_id = one.id
+                    unavi_seat = []
+                    for u in orders:
+                        unavi_seat.append(u.seat)
+                    break
+
+    # print('avi=', avi)
+    if avi == -1:
+        return render(request, 'booking/no-result.html')
+        # test = models.Departure.objects.get(id=1)
+        # print('test=', test.datetime)
+    # print('avi=', avi)
+
+    unavi_seat_gen = []
+    for x in unavi_seat:
+        x1 = x // 4
+        if x % 4 != 0:
+            x1 = x1 + 1
+        x2 = x % 4
+        if x2 == 1:
+            x2 = 3
+        elif x2 == 2:
+            x2 = 4
+        elif x2 == 3:
+            x2 = 6
+        else:
+            x2 =7
+        unavi_seat_gen.append(str(x1)+'_'+str(x2))
+    print('unavi_seat_gen=',unavi_seat_gen)
+
+    return render(request, 'booking/booking.html', {
+        'name': name,
+        'terminal': terminal,
+        'price': price,
+        'departuredate': departuredate,
+        'departuretime': departuretime,
+        'unavi_seat': unavi_seat_gen, # ['2_3', '3_4', '6_7']测试可用
+        'departure_id': departure_id
+    })
+
+
+def no_result(request):
+    return render(request, 'booking/no-result.html')
+
+
+def result(request):
+    if request == 'GET':
+        return render(request, 'login/index.html')
+    else:
+        seat = request.POST.get('seat', None)
+        departure_id = request.POST.get('departure_id', None)
+        user_id = request.session['user_id']
+        print('seat=', seat)
+        print('departure_id=', departure_id)
+        print('user_id=', user_id)
+
+        seat_num = re.findall(r'\d+', seat)
+        print(seat_num)
+        x2 = -1
+        if seat_num[1] == '3':
+            x2 = 1
+        elif seat_num[1] == '4':
+            x2 = 2
+        elif seat_num[1] == '6':
+            x2 = 3
+        else:
+            x2 = 4
+        seat_count = (int(seat_num[0])-1)*4+x2
+        print('seat_count=', seat_count)
+
+        # 添加到数据库中
+        getuser = models.User.objects.get(id=user_id)
+        getdeparture = models.Departure.objects.get(id=departure_id)
+        newOrder = {
+            'user': getuser,
+            'seat': seat_count,
+            'departure': getdeparture
+        }
+        new_order = models.Order.objects.create(**newOrder)
+        # new_order.user = user_id
+        # new_order.seat = seat_count
+        # new_order.departure = departure_id
+        new_order.save()
+
+    return render(request, 'booking/result.html')
