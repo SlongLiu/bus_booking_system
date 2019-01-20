@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>结果页面</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}结果页面{% endblock %}
+{% block content %}
+    <div class="container">
+    <div class="jumbotron">
+      <h1>订票成功</h1>
+        <hr>
+      <p>衷心的祝愿您拥有温馨，愉快的旅程。</p>
+        <br>
+      <p><a class="btn btn-primary btn-lg" href="/index/" role="button">返回首页</a></p>
+    </div>
+    </div>
+{% endblock %}

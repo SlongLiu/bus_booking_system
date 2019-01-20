@@ -83,7 +83,7 @@ DATABASES = {
         'HOST': '',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': '988618',
+        'PASSWORD': 'yourpassword',
         'OPTIONS': {
             'init_command': 'SET default_storage_engine=INNODB,'
                             'character_set_connection=utf8,collation_connection=utf8_unicode_ci;'}
