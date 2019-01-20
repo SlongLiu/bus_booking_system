@@ -23,8 +23,8 @@ def first_request(request):
 
 
 def index(request):
-    pass
-    return render(request, 'login/index.html')
+    # pass
+    return render(request, 'index.html')
 
 
 def login(request):
