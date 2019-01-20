@@ -32,6 +32,9 @@ urlpatterns = [
     path('browse/', views.browse),
     path('booking/', views.booking, name='booking'),
     path('np-result/', views.no_result),
-    path('result/', views.result, name='result')
+    path('result/', views.result, name='result'),
+    path('', views.index),
+    path('validation/', views.validation, name='validation'),
+    path('manage/', views.manage)
 
 ]

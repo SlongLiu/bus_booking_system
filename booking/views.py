@@ -184,8 +184,24 @@ def browse(request):
     })
 
 
+def seat_coding(x):
+    x1 = x // 4
+    if x % 4 != 0:
+        x1 = x1 + 1
+    x2 = x % 4
+    if x2 == 1:
+        x2 = 3
+    elif x2 == 2:
+        x2 = 4
+    elif x2 == 3:
+        x2 = 6
+    else:
+        x2 = 7
+    return(str(x1) + '排' + str(x2) + '座')
+
+
 def booking(request):
-    if request == 'GET':
+    if request.method == 'GET':
         return render(request, 'login/index.html')
     else:
         terminal = request.POST.get('terminal', None).split(':')[0]
@@ -280,7 +296,7 @@ def no_result(request):
 
 
 def result(request):
-    if request == 'GET':
+    if request.method == 'GET':
         return render(request, 'login/index.html')
     else:
         seat = request.POST.get('seat', None)
@@ -319,3 +335,68 @@ def result(request):
         new_order.save()
 
     return render(request, 'booking/result.html')
+
+
+def validation(request):
+    message = ''
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id', None)
+        print('order_id=', order_id)
+        obj = models.Order.objects.get(id=order_id)
+        obj.validation = 'y'
+        obj.save()
+        print(order_id,'检票成功')
+        message = '检票成功'
+
+
+    print(request.session['identify'])
+
+    departure = models.Departure.objects.filter(busdriver_id=request.session['user_id'])
+    departure_list = []
+    for x in departure:
+        orders_model = models.Order.objects.filter(id=x.id)
+        orders = []
+        for order in orders_model:
+            w = {
+                'user_id': order.user_id,
+                'seat': seat_coding(order.seat),
+                'order_id': order.id,
+                'validation': order.validation
+            }
+            orders.append(w)
+        dep = {
+            'id': x.id,
+            'datetime': x.datetime,
+            'shuttle': x.shuttle_id,
+            'orders': orders,
+            'num': len(orders)
+        }
+        print(dep)
+        departure_list.append(dep)
+
+    return render(request, 'manage/validation.html', {
+        'departure': departure_list,
+        'message': message
+    })
+
+
+def manage(request):
+
+    userinfo = models.User.objects.filter(identify='user')
+    print('userinfo=', userinfo)
+    userinfo_list = []
+    for user in userinfo:
+        one = {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'sex': user.sex,
+            'mobile': user.mobile,
+            'realname': user.realname
+        }
+        userinfo_list.append(one)
+
+    return render(request, 'manage/manage.html', {
+        'usernum': len(userinfo_list),
+        'users': userinfo_list
+    })

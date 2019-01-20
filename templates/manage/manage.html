@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}订单管理{% endblock %}
+{% block content %}
+    <div class="container">
+    {% if request.session.identify == 'employee'%}
+      <table class="table table-hover table-bordered" style="overflow:auto">
+            <thead>
+                <tr>
+                    <td style="width:20%">用户id</td>
+                    <td style="width:20%">用户名</td>
+                    <td style="width:20%">用户真实姓名</td>
+                    <td style="width:20%">用户手机</td>
+                    <td style="width:20%">用户邮箱</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td style="height:22px">{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.realname }}</td>
+                        <td>{{ user.mobile }}</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    {% else %}
+    <h1>你尚未登录，只能访问公开内容！</h1>
+    {% endif %}
+    </div>
+{% endblock %}

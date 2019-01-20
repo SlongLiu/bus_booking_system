@@ -134,6 +134,12 @@ class Order(models.Model):
     订单信息
     '''
 
+    ticket = (
+        ('y', '已检票'),
+        ('n', '未检票'),
+    )
+
     user = models.ForeignKey(to='User', to_field='id', on_delete=models.CASCADE)
     departure = models.ForeignKey(to='Departure', to_field='id', on_delete=models.CASCADE)
     seat = models.IntegerField()
+    validation = models.CharField(max_length=8, choices=ticket, default='n')
