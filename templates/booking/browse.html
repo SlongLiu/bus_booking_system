@@ -13,20 +13,20 @@
 {% block content %}
     <div class="container">
     {% if not request.session.is_login %}
-    <h3>您尚未登陆，请登录后购票</h3>
+    <h3>您尚未登陆，仅能浏览车票，请登录后购票</h3>
     {% else %}
     <h1>您好,{{ request.session.user_name }}。请选择您需要购买的车票！</h1>
     {% endif %}
 
     <br>
-
-        <ul class="nav nav-pills">
-          <li role="presentation" class="active"><a href="#">从机场出发</a></li>
-          <li role="presentation"><a href="#">前往机场</a></li>
-          <li role="presentation"><a href="#">省际巴士</a></li>
-        </ul>
-
-    <br>
+{##}
+{#        <ul class="nav nav-pills">#}
+{#          <li role="presentation" class="active"><a href="#">从机场出发</a></li>#}
+{#          <li role="presentation"><a href="#">前往机场</a></li>#}
+{#          <li role="presentation"><a href="#">省际巴士</a></li>#}
+{#        </ul>#}
+{##}
+{#    <br>#}
 
 	{% for item in context %}
          <br>
@@ -53,7 +53,7 @@
             {{ item.service_time_start }}--{{ item.service_time_end }}
             </div>
         <br>
-
+          {% if request.session.is_login %}
          <!--- 设计表单 --->
          <form class="form" role="form" method="POST" action="{% url 'booking' %}" >
          {% csrf_token %}
@@ -96,7 +96,7 @@
             <input type="hidden" value="{{ item.name }}" name="name"/><br/>
 {#            <input type="hidden" value="{{ item.name }}" name="price"/><br/>#}
           </form>
-
+            {% endif %}
           </div>
 
         </div>

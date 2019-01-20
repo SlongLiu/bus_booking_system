@@ -46,17 +46,43 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
+
+
+          {% if request.session.identify == 'user' %}
+              <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="/browse/">在线订票</a>
+                </li>
+              <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/logout/">登出</a>
+                </li>
+{#                  <li><a href="/browse/">订票</a></li>#}
+              {% elif request.session.identify == 'busdriver' %}
+               <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/validation/">检票</a>
+                </li>
+              <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/logout/">登出</a>
+                </li>
+{#                  <li><a href="/validation/">检票</a></li>#}
+            {% elif request.session.identify == 'employee' %}
+{#                <li><a href="/manage/">用户管理</a></li>#}
+              <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/manage/">用户管理</a>
+                </li>
+              <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/logout/">登出</a>
+                </li>
+              {% else %}
+              <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/register/">注册</a>
+                </li>
+              <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/login/">登陆</a>
+                </li>
+              {% endif %}
+
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#about">BOOKING ONline</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#services">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#portfolio">Portfolio</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
+              <a class="nav-link js-scroll-trigger" href="#contact">关于</a>
             </li>
           </ul>
         </div>
@@ -76,9 +102,11 @@
             <p class="text-faded mb-5">市区旅客可方便乘坐市内机场巴士往返首都机场与方庄、北京南站、北京站、公主坟、中关村、
                 上地奥运村、北京西站、回龙观、通州、王府井金宝街、石景山、燕郊、昌平等地，
                 周边城市旅客可乘坐省际机场巴士往返机场与天津、秦皇岛、廊坊、保定、唐山、沧州和赤峰等地。</p>
-              <p class="text-faded mb-5">在购票开始之前，我们建议您首先登陆</p>
-            <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">登陆</a>
-              <a class="btn btn-light btn-xl js-scroll-trigger" href="#about">注册</a>
+              <p class="text-faded mb-5">现在我们开通了在线预订车票的服务，在购票开始之前，我们建议您首先登陆或者注册。</p>
+
+            <a class="btn btn-light btn-xl js-scroll-trigger" href="/register/">注册</a>
+              <a class="col-lg-3"> </a>
+              <a class="btn btn-primary btn-xl js-scroll-trigger" href="/login/">登陆</a>
           </div>
         </div>
       </div>
@@ -93,21 +121,14 @@
             <p class="text-faded mb-5">
                 这里分为市内机场巴士线路和省际机场巴士线路，您可以根据需要选择合适的线路。
             </p>
-            <a class="btn btn-light btn-xl js-scroll-trigger" href="#services">Get Started!</a>
+            <a class="btn btn-light btn-xl js-scroll-trigger" href="/browse/">开始购票</a>
           </div>
         </div>
       </div>
     </section>
 
-{#    <section class="bg-dark text-white">#}
-{#      <div class="container text-center">#}
-{#        <h2 class="mb-4">Free Download at Start Bootstrap!</h2>#}
-{#        <a class="btn btn-light btn-xl sr-button" href="#">Download Now!</a>#}
-{#      </div>#}
-{#    </section>#}
-
     <section id="contact">
-      <div class="container">
+      <div class=" container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center">
             <h2 class="section-heading">关于开发者</h2>
