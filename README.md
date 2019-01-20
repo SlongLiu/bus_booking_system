@@ -18,11 +18,9 @@
 
 #### 放个首页的图片：
 
-![1547978019035](C:/Users/lenovo/AppData/Roaming/Typora/typora-user-images/1547978019035.png)
+![1547978358078](assets/1547978358078.png)
 
-![1547978041361](C:/Users/lenovo/AppData/Roaming/Typora/typora-user-images/1547978041361.png)
-
-
+![1547978365043](assets/1547978365043.png)
 
 也就首页能看了（其实是套了模板），剩下的页面没怎么美化就不放首页了2333。
 
