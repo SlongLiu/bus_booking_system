@@ -21,8 +21,10 @@
 			<li class="layer" data-depth="0.10"><img src="{% static 'images/monster-eyes-01.png' %}"></li>
 		</ul>
 		<h1>啊哈！你的搜索结果被怪物吃掉啦！ 没有找到你能用的车啊！</h1>
+        <p>还有<span id="sp">5</span>秒跳转到订票界面...</p>
         <h1></h1>
 		<a href="{% url 'index' %}" class="btn">返回首页</a>
+        <a href="/browse/" class="btn">返回订票</a>
 	</div>
 
 
@@ -35,6 +37,23 @@
 	var scene = document.getElementById('scene');
 	var parallax = new Parallax(scene);
 	</script>
+
+<script>
+    onload=function () {
+        setInterval(go,1000)
+    };
+    var x=5;
+    function go() {
+
+        if (x>=0){
+            document.getElementById("sp").innerText=x;
+        }else {
+            location.href="/browse/";
+        }
+        x--;
+    }
+</script>
+
 
 </body>
 </html>

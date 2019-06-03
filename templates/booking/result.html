@@ -6,8 +6,27 @@
       <h1>订票成功</h1>
         <hr>
       <p>衷心的祝愿您拥有温馨，愉快的旅程。</p>
+        <p>还有<span id="sp">5</span>秒跳转到订票界面...</p>
         <br>
       <p><a class="btn btn-primary btn-lg" href="/index/" role="button">返回首页</a></p>
     </div>
     </div>
+
+
+
+    <script>
+    onload=function () {
+        setInterval(go,1000)
+    };
+    var x=5;
+    function go() {
+
+        if (x>=0){
+            document.getElementById("sp").innerText=x;
+        }else {
+            location.href="/browse/";
+        }
+        x--;
+    }
+</script>
 {% endblock %}

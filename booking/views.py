@@ -45,7 +45,14 @@ def login(request):
                     request.session['user_name'] = user.name
                     request.session['identify'] = user.identify
                     print(user.identify)
-                    return redirect('/index/')
+                    if user.identify == 'employee':
+                        return redirect('/manage_orders/')
+                    elif user.identify == 'user':
+                        return redirect('/browse/')
+                    elif user.identify == 'busdriver':
+                        return redirect('/validation/')
+                    else:
+                        return redirect('/index/')
                 else:
                     message = "密码不正确！"
             except:
@@ -302,9 +309,11 @@ def result(request):
         seat = request.POST.get('seat', None)
         departure_id = request.POST.get('departure_id', None)
         user_id = request.session['user_id']
+        # cart = request.session['cart']
         print('seat=', seat)
         print('departure_id=', departure_id)
         print('user_id=', user_id)
+        # print('cart=', cart)
 
         seat_num = re.findall(r'\d+', seat)
         print(seat_num)
@@ -381,7 +390,7 @@ def validation(request):
 
 
 def manage(request):
-
+    print('request.method=', request.method)
     userinfo = models.User.objects.filter(identify='user')
     print('userinfo=', userinfo)
     userinfo_list = []
@@ -396,7 +405,59 @@ def manage(request):
         }
         userinfo_list.append(one)
 
-    return render(request, 'manage/manage.html', {
+    return render(request, 'manage/management.html', {
         'usernum': len(userinfo_list),
         'users': userinfo_list
     })
+
+
+def manage_orders(request):
+    print('request.method=', request.method)
+    orderinfo = models.Order.objects.all()
+    print('orderinfo=', orderinfo)
+    orderinfo_list = []
+    for order in orderinfo:
+        # print(order.user.)
+        # username = list(models.User.objects.filter(id=int(order.user)))[0].name
+        # adeparture = list(models.Departure.objects.filter(id=order.departure))[0]
+        # datetime = adeparture.datetime
+        # busdriver_id = adeparture.busdriver_id
+        # busdriver_name = list(models.User.objects.filter(id=busdriver_id))[0].name
+        # shuttle_id = adeparture.shuttle_id
+        # shuttle = list(models.Shuttle.objects.filter(id=shuttle_id))[0]
+        # shuttle_line = shuttle.line
+        # shuttle_plate = shuttle.shuttle_plate
+
+        one = {
+            'id': order.id,
+            'user': order.user,
+            'username': order.user.name,
+
+            'departure_id': order.departure,
+            'datetime': order.departure.datetime,
+            'busdriver_id': order.departure.busdriver,
+            'busdriver_name': order.departure.busdriver.name,
+
+            'shuttle_id': order.departure.shuttle,
+            'shuttle_line': order.departure.shuttle.line,
+            'shuttle_plate': order.departure.shuttle.plate,
+
+            'seat': order.seat,
+            'validation': order.validation
+        }
+
+        orderinfo_list.append(one)
+        print(one)
+    return render(request, 'manage/manage_orders.html', {
+        'ordernum': len(orderinfo_list),
+        'orders': orderinfo_list
+    })
+
+
+def del_order(request, id):
+    if request.session['identify'] != 'employee':
+        return redirect('/index/')
+    del_obj = models.Order.objects.get(id=id)
+    del_obj.delete()
+
+    return redirect('/manage_orders/')

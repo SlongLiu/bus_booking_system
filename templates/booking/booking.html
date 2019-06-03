@@ -110,6 +110,7 @@
                     <input type="hidden" value="{{ name }}" name="name"/><br/>
                     <input id='seat1' type="hidden" value="" name="seat"/><br/>
                     <input type="hidden" value="{{ departure_id }}" name="departure_id"/><br/>
+                    <input type="hidden" value="" id="cart" name="cart"/><br/>
                 </form>
                 <div id="legend"></div>
             </div>
@@ -189,6 +190,7 @@
             sc.get(noseat).status('unavailable');
 
         });
+
         /*计算总金额*/
         function recalculateTotal(sc) {
             var total = 0;
